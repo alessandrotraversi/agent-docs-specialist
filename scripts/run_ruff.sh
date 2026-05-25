@@ -3,16 +3,14 @@
 # Script para executar o Ruff (linter) no projeto
 # Uso: ./scripts/run_ruff.sh [argumentos extras, ex: --fix]
 
-VENV_RUFF="./.venv/bin/ruff"
-
-if [ ! -f "$VENV_RUFF" ]; then
-    echo "Erro: ruff não encontrado em $VENV_RUFF"
-    echo "Certifique-se de que o ambiente virtual está configurado e ruff está instalado."
-    exit 1
+# Determina o comando ruff (usa venv se existir, caso contrário usa o global)
+RUFF_CMD="ruff"
+if [ -f "./.venv/bin/ruff" ]; then
+    RUFF_CMD="./.venv/bin/ruff"
 fi
 
 echo "--- Executando Ruff (Linter) ---"
-$VENV_RUFF check src/ tests/ "$@"
+$RUFF_CMD check src/ tests/ "$@"
 EXIT_CODE=$?
 
 if [ $EXIT_CODE -eq 0 ]; then

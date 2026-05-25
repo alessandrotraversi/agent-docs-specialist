@@ -6,7 +6,7 @@ This project demonstrates how to build and run AI agents using [LangChain](https
 
 - **Documentation Agent**: A modular agent using LangGraph to generate PRD, ADR, FDD, and Design Docs from a project interview.
 - **Diagram Generation (Mermaid & PlantUML)**: Ability to generate and save Mermaid.js diagrams (for general flows) and PlantUML (specifically for C4 model) as part of the documentation workflow or via a standalone CLI.
-- **Project History & Persistence**: Uses PostgreSQL (via LocalStack or Docker) to store workflow checkpoints (LangGraph) and a project knowledge base to maintain consistency across different document generations.
+- **Project History & Persistence**: Uses PostgreSQL (via Docker) to store workflow checkpoints (LangGraph) and a project knowledge base to maintain consistency across different document generations.
 - **Local Execution**: All models run locally on your machine via Ollama, ensuring data privacy and no API costs.
 - **Security Audit**: Includes `pip-audit` to validate project dependencies against known vulnerabilities.
 - **Code Quality**: Uses `ruff` for linting and `pytest` for automated testing.
@@ -18,15 +18,15 @@ This project demonstrates how to build and run AI agents using [LangChain](https
     ```bash
     ollama pull llama3.1
     ```
-3.  **Docker & LocalStack**: Needed for PostgreSQL persistence.
+3.  **Docker**: Needed for PostgreSQL persistence.
 4.  **Python**: Python 3.9 or higher is recommended.
 
 ## Installation
 
 1.  Clone this repository to your local machine.
-2.  Start the infrastructure (PostgreSQL via Docker/LocalStack):
+2.  Start the infrastructure (PostgreSQL via Docker):
     ```bash
-    docker-compose up -d
+    docker-compose -f docker/docker-compose.yml up -d
     ```
 3.  Create a virtual environment:
     ```bash
@@ -101,6 +101,20 @@ export PYTHONPATH=$PYTHONPATH:.
 ./scripts/run_tests.sh
 ```
 
+### 8. Repository Protection
+A GitHub Ruleset configuration is provided in `branch_protection_ruleset.json` to protect the `main` branch. This ruleset:
+- Restricts deletions and non-fast-forward pushes.
+- Requires pull requests with at least one approval.
+- Restricts merge/bypass permissions to Repository Admins (Owners).
+
+To apply this, go to your GitHub Repository Settings -> Code and automation -> Rules -> Rulesets -> Import ruleset.
+
+### 9. Continuous Integration (CI)
+A quality pipeline is configured via GitHub Actions in `.github/workflows/quality.yml`. For every Pull Request targeting the `main` or `master` branches, the following checks are automatically executed:
+- **Linting**: Runs `ruff` to ensure code style and quality.
+- **Security Audit**: Runs `pip-audit` to check for known vulnerabilities in dependencies.
+- **Automated Tests**: Runs the full `pytest` suite with code coverage, using a temporary PostgreSQL service.
+
 ## Project Structure
 
 - `src/`: Core source code.
@@ -111,8 +125,8 @@ export PYTHONPATH=$PYTHONPATH:.
     - `prompts/`: Template prompts enhanced with history injection.
     - `tools/`: Independent tools for diagram generation.
     - `config/`: Centralized environment configurations.
+- `docker/`: Contains infrastructure configuration (e.g., `docker-compose.yml`).
 - `requirements.txt`: Python dependencies.
 - `scripts/`: Utility scripts for auditing, linting, and testing.
 - `tests/`: Automated tests with pytest.
 - `.outputs/`: Generated documents (PRD, ADR, etc.).
-- `docker-compose.yml`: Infrastructure setup (PostgreSQL/LocalStack).

@@ -18,7 +18,7 @@ OUTPUT_DOCS_DIR = BASE_DIR / os.getenv("OUTPUT_DOCS_DIR", ".outputs")
 
 # Configurações do Banco de Dados (PostgreSQL)
 DB_HOST = os.getenv("DB_HOST", "localhost")
-DB_PORT = os.getenv("DB_PORT", "4566") # Porta padrão do LocalStack
+DB_PORT = os.getenv("DB_PORT", "5432") # Porta padrão do Postgres
 DB_NAME = os.getenv("DB_NAME", "postgres")
 DB_USER = os.getenv("DB_USER", "postgres")
 DB_PASS = os.getenv("DB_PASS", "postgres")

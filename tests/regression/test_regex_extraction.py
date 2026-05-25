@@ -10,7 +10,7 @@ def test_regression_adr_extraction_robustness():
     
     **1. Título**: PostgreSQL para Persistência
     **2. Contexto**: Precisamos de ACID.
-    **3. Decisão**: Usar Postgres via LocalStack.
+    **3. Decisão**: Usar Postgres via Docker.
     """
     
     state = {"adr": adr_content, "prd": ""}
@@ -23,7 +23,7 @@ def test_regression_adr_extraction_robustness():
         mock_add.assert_called_once()
         args, kwargs = mock_add.call_args
         assert kwargs['title'] == "PostgreSQL para Persistência"
-        assert kwargs['decision'] == "Usar Postgres via LocalStack."
+        assert kwargs['decision'] == "Usar Postgres via Docker."
 
 def test_regression_adr_extraction_numeric_list():
     """
