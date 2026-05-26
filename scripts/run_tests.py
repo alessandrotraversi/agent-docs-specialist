@@ -13,12 +13,19 @@ def main():
     pytest_cmd = get_command("pytest")
     
     # Argumentos extras passados ao script
+    # Se o primeiro argumento for um diretório existente dentro de tests/, usa ele.
+    # Caso contrário, usa o diretório padrão 'tests/' e passa todos os argumentos como extras.
+    target_test = "tests/"
     extra_args = sys.argv[1:]
     
-    print("--- Executando Testes com Pytest ---")
+    if len(sys.argv) > 1 and (os.path.isdir(sys.argv[1]) or sys.argv[1].startswith("tests/")):
+        target_test = sys.argv[1]
+        extra_args = sys.argv[2:]
+
+    print(f"--- Executando Testes com Pytest em: {target_test} ---")
     
-    # Monta o comando completo: pytest --cov=src --cov-report=term-missing tests/
-    cmd = [pytest_cmd, "--cov=src", "--cov-report=term-missing", "tests/"] + extra_args
+    # Monta o comando completo: pytest --cov=src --cov-report=term-missing <target_test>
+    cmd = [pytest_cmd, "--cov=src", "--cov-report=term-missing", target_test] + extra_args
     
     try:
         # Garante que o PYTHONPATH inclua o diretório atual para as importações do src

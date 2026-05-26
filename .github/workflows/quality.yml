@@ -55,8 +55,8 @@ jobs:
       run: |
         python scripts/audit_packages.py
 
-    # Passo 6: Executa a suíte completa de testes unitários, funcionais e de integração
-    - name: Run Tests (Pytest)
+    # Passo 6: Executa testes unitários
+    - name: Run Unit Tests
       env:
         DB_HOST: localhost
         DB_PORT: 5432
@@ -65,4 +65,52 @@ jobs:
         DB_NAME: postgres
         PYTHONPATH: .
       run: |
-        python scripts/run_tests.py
+        python scripts/run_tests.py tests/unit
+
+    # Passo 7: Executa testes de integração
+    - name: Run Integration Tests
+      env:
+        DB_HOST: localhost
+        DB_PORT: 5432
+        DB_USER: postgres
+        DB_PASS: postgres
+        DB_NAME: postgres
+        PYTHONPATH: .
+      run: |
+        python scripts/run_tests.py tests/integration
+
+    # Passo 8: Executa testes funcionais
+    - name: Run Functional Tests
+      env:
+        DB_HOST: localhost
+        DB_PORT: 5432
+        DB_USER: postgres
+        DB_PASS: postgres
+        DB_NAME: postgres
+        PYTHONPATH: .
+      run: |
+        python scripts/run_tests.py tests/functional
+
+    # Passo 9: Executa testes de aceitação
+    - name: Run Acceptance Tests
+      env:
+        DB_HOST: localhost
+        DB_PORT: 5432
+        DB_USER: postgres
+        DB_PASS: postgres
+        DB_NAME: postgres
+        PYTHONPATH: .
+      run: |
+        python scripts/run_tests.py tests/acceptance
+
+    # Passo 10: Executa testes de regressão
+    - name: Run Regression Tests
+      env:
+        DB_HOST: localhost
+        DB_PORT: 5432
+        DB_USER: postgres
+        DB_PASS: postgres
+        DB_NAME: postgres
+        PYTHONPATH: .
+      run: |
+        python scripts/run_tests.py tests/regression

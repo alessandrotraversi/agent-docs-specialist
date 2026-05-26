@@ -6,6 +6,9 @@ import subprocess
 CONVENTIONAL_COMMIT_REGEX = r"^(feat|fix|docs|style|refactor|perf|test|build|ci|chore|revert)(\(.*\))?!?: .+$"
 
 def check_commit_message(message):
+    # Ignorar mensagens de merge automático, revert e o commit inicial padrão
+    if message.startswith("Merge ") or message.startswith("Revert ") or message.lower() == "first commit":
+        return True
     if not re.match(CONVENTIONAL_COMMIT_REGEX, message):
         return False
     return True
