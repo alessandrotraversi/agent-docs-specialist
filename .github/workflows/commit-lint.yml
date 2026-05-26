@@ -1,0 +1,40 @@
+name: Commit Message Quality
+
+# Dispara a validação em Pull Requests e Pushes para garantir que as mensagens
+# de commit sigam o padrão Conventional Commits usando um script Python personalizado.
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+  push:
+    branches: [main, master]
+
+jobs:
+  commit-lint:
+    runs-on: ubuntu-latest
+    steps:
+      # Passo 1: Checkout do código.
+      # fetch-depth: 0 é necessário para que o script possa analisar o histórico de commits.
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      # Passo 2: Instalação do Python
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+
+      # Passo 3: Execução do script de validação
+      # Em Pull Requests, validamos todos os commits entre a base e o topo da branch.
+      # Em Pushes (na main), validamos apenas o último commit.
+      - name: Run Commit Lint Script
+        run: |
+          if [ "${{ github.event_name }}" == "pull_request" ]; then
+            echo "--- Validando commits no Pull Request ---"
+            # Compara a branch atual com a branch alvo (base)
+            python scripts/check_commit.py "origin/${{ github.base_ref }}..HEAD"
+          else
+            echo "--- Validando último commit no Push ---"
+            python scripts/check_commit.py
+          fi

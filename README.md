@@ -66,12 +66,12 @@ We use `pip-audit` to ensure the security of our dependencies.
 
 #### Check for vulnerabilities in current environment:
 ```bash
-./scripts/audit_packages.sh
+python scripts/audit_packages.py
 ```
 
 #### Add a new package and check security automatically:
 ```bash
-./scripts/add_package.sh <package_name>
+python scripts/add_package.py <package_name>
 ```
 
 ### 6. Code Quality (Linting)
@@ -79,12 +79,12 @@ We use `ruff` to maintain code quality and consistency.
 
 #### Run linter:
 ```bash
-./scripts/run_ruff.sh
+python scripts/run_ruff.py
 ```
 
 #### Automatically fix issues:
 ```bash
-./scripts/run_ruff.sh --fix
+python scripts/run_ruff.py --fix
 ```
 
 ### 7. Testing
@@ -97,8 +97,7 @@ We use `pytest` with `pytest-cov` for coverage and `pytest-sugar` for a better t
 
 #### Run all tests with coverage:
 ```bash
-export PYTHONPATH=$PYTHONPATH:.
-./scripts/run_tests.sh
+python scripts/run_tests.py
 ```
 
 ### 8. Repository Protection
@@ -114,6 +113,31 @@ A quality pipeline is configured via GitHub Actions in `.github/workflows/qualit
 - **Linting**: Runs `ruff` to ensure code style and quality.
 - **Security Audit**: Runs `pip-audit` to check for known vulnerabilities in dependencies.
 - **Automated Tests**: Runs the full `pytest` suite with code coverage, using a temporary PostgreSQL service.
+
+### 10. Auto Changelog
+A workflow is configured in `.github/workflows/changelog.yml` to automatically update the `CHANGELOG.md` file every time a change is merged into the `main` or `master` branches. It uses the message of the latest commit/merge to document progress.
+
+### 11. Conventional Commits
+The project enforces the [Conventional Commits](https://www.conventionalcommits.org/) specification for all commit messages. A validation pipeline is configured in `.github/workflows/commit-lint.yml`.
+
+#### Supported Types:
+- `feat`: New features.
+- `fix`: Bug fixes.
+- `docs`: Documentation changes.
+- `style`: Formatting, missing semi-colons, etc (no code changes).
+- `refactor`: Refactoring production code.
+- `perf`: Performance improvements.
+- `test`: Adding tests, refactoring tests.
+- `build`: Build system or external dependencies.
+- `ci`: CI configuration files and scripts.
+- `chore`: Other changes that don't modify src or test files.
+- `revert`: Reverts a previous commit.
+
+#### Local Validation:
+You can check your last commit message locally:
+```bash
+python scripts/check_commit.py
+```
 
 ## Project Structure
 
