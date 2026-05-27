@@ -10,7 +10,7 @@ def main():
         init_db()
     except Exception as e:
         print(f"Aviso: Não foi possível inicializar o banco de dados de histórico: {e}")
-        print("Certifique-se de que o PostgreSQL está rodando (via docker-compose ou LocalStack).")
+        print("Certifique-se de que o PostgreSQL está rodando (via docker-compose).")
     
     # Exemplo de entrevista simulada
     interview_text = """

@@ -1,0 +1,38 @@
+name: Auto Changelog Update
+
+# Dispara quando ocorre um push (incluindo merges) nas branches principais
+on:
+  push:
+    branches:
+      - main
+      - master
+
+jobs:
+  update-changelog:
+    # Garante que não entre em loop infinito se o próprio commit de log disparar a pipe
+    if: "!contains(github.event.head_commit.message, '[skip ci]')"
+    runs-on: ubuntu-latest
+    
+    permissions:
+      contents: write
+
+    steps:
+      # Passo 1: Checkout do código com histórico completo para pegar mensagens de commit
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      # Passo 2: Executa o script de atualização
+      - name: Update CHANGELOG.md
+        run: |
+          python scripts/update_changelog.py
+
+      # Passo 3: Commit e Push das alterações de volta para o repositório
+      - name: Commit and Push changes
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add CHANGELOG.md
+          # Só commita se houver mudanças
+          git diff --quiet && git diff --staged --quiet || (git commit -m "docs: update CHANGELOG.md [skip ci]" && git push)

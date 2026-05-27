@@ -1,0 +1,116 @@
+name: Project Quality Pipeline
+
+# Define os eventos que disparam a execução da pipeline
+on:
+  pull_request:
+    branches: [ main, master ]
+  push:
+    branches: [ main, master ]
+
+jobs:
+  quality-check:
+    runs-on: ubuntu-latest
+    
+    # Configura serviços auxiliares (Docker) necessários para os testes
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: postgres
+        ports:
+          - 5432:5432
+        # Aguarda o banco estar pronto para conexões antes de prosseguir
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    steps:
+    # Passo 1: Obtém o código fonte do repositório
+    - uses: actions/checkout@v4
+
+    # Passo 2: Instala e configura a versão correta do Python
+    - name: Set up Python 3.10
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.10'
+        cache: 'pip'
+
+    # Passo 3: Instala as dependências listadas no requirements.txt
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+
+    # Passo 4: Executa o linter Ruff para validar estilo e qualidade de código
+    - name: Run Linting (Ruff)
+      run: |
+        python scripts/run_ruff.py
+
+    # Passo 5: Realiza auditoria de segurança em pacotes instalados (pip-audit)
+    - name: Run Security Audit (pip-audit)
+      run: |
+        python scripts/audit_packages.py
+
+    # Passo 6: Executa testes unitários
+    - name: Run Unit Tests
+      env:
+        DB_HOST: localhost
+        DB_PORT: 5432
+        DB_USER: postgres
+        DB_PASS: postgres
+        DB_NAME: postgres
+        PYTHONPATH: .
+      run: |
+        python scripts/run_tests.py tests/unit
+
+    # Passo 7: Executa testes de integração
+    - name: Run Integration Tests
+      env:
+        DB_HOST: localhost
+        DB_PORT: 5432
+        DB_USER: postgres
+        DB_PASS: postgres
+        DB_NAME: postgres
+        PYTHONPATH: .
+      run: |
+        python scripts/run_tests.py tests/integration
+
+    # Passo 8: Executa testes funcionais
+    - name: Run Functional Tests
+      env:
+        DB_HOST: localhost
+        DB_PORT: 5432
+        DB_USER: postgres
+        DB_PASS: postgres
+        DB_NAME: postgres
+        PYTHONPATH: .
+      run: |
+        python scripts/run_tests.py tests/functional
+
+    # Passo 9: Executa testes de aceitação
+    - name: Run Acceptance Tests
+      env:
+        DB_HOST: localhost
+        DB_PORT: 5432
+        DB_USER: postgres
+        DB_PASS: postgres
+        DB_NAME: postgres
+        PYTHONPATH: .
+      run: |
+        python scripts/run_tests.py tests/acceptance
+
+    # Passo 10: Executa testes de regressão
+    - name: Run Regression Tests
+      env:
+        DB_HOST: localhost
+        DB_PORT: 5432
+        DB_USER: postgres
+        DB_PASS: postgres
+        DB_NAME: postgres
+        PYTHONPATH: .
+      run: |
+        python scripts/run_tests.py tests/regression
